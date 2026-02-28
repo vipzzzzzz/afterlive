@@ -96,12 +96,13 @@ npm run preview    # Preview production build
 ## Deploy
 
 ```bash
-# Build and run
+# Build and run (serves on port 8091)
 docker compose up -d --build
 
 # Site available at http://localhost:8091
-# For cloudflared tunnel, set TUNNEL_TOKEN in .env
 ```
+
+Cloudflare tunnel is managed separately — just add a route for `afterlive.net → http://<docker-host>:8091` in your Zero Trust dashboard and restart the tunnel container.
 
 ## Source
 
