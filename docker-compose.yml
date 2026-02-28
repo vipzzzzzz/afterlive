@@ -4,12 +4,3 @@ services:
     restart: unless-stopped
     ports:
       - "8091:80"
-
-  tunnel:
-    image: cloudflare/cloudflared:latest
-    restart: unless-stopped
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
-    depends_on:
-      - web
