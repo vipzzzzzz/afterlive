@@ -1,0 +1,43 @@
+---
+import { slideshowImages } from '@/data/site';
+
+interface Props {
+  heavyOverlay?: boolean;
+}
+
+const { heavyOverlay = false } = Astro.props;
+---
+
+<div class={`slideshow ${heavyOverlay ? 'heavy-overlay' : ''}`} data-interval="4000">
+  {slideshowImages.map((src, i) => (
+    <div
+      class={`slideshow-image ${i === 0 ? 'active' : ''}`}
+      style={`background-image: url('${src}')`}
+    />
+  ))}
+</div>
+
+<script>
+  function initSlideshow() {
+    const container = document.querySelector('.slideshow');
+    if (!container) return;
+
+    const images = container.querySelectorAll('.slideshow-image');
+    if (images.length <= 1) return;
+
+    const interval = parseInt(container.dataset.interval || '4000', 10);
+    let current = 0;
+
+    const timer = setInterval(() => {
+      images[current].classList.remove('active');
+      current = (current + 1) % images.length;
+      images[current].classList.add('active');
+    }, interval);
+
+    // Clean up on page transition
+    document.addEventListener('astro:before-swap', () => clearInterval(timer), { once: true });
+  }
+
+  initSlideshow();
+  document.addEventListener('astro:after-swap', initSlideshow);
+</script>

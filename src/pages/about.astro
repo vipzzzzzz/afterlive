@@ -1,0 +1,70 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" heavyOverlay={true}>
+  <main class="page-content" style="align-items: flex-start;">
+    <div class="about-content">
+      <h2>Who are we?</h2>
+      <p>
+        LivingRoom consists of a close group of techno minded friends, who just can't get enough!
+      </p>
+      <p>
+        With some talented professional creatives in our midst and some crazy ass gear, we make every afterparty one to forever remember.
+      </p>
+      <p>
+        Over the past 2 years we've made numerous living rooms our own, delivering an immersive nightclub experience complete with visuals, lasers and professional lighting.
+      </p>
+      <p>
+        We quickly realised that what we are doing is pretty unique, and so decided why not let the rest of the world join in on our crazy afterparties? No great story ever starts with eating a salad!
+      </p>
+
+      <h2>What we do!</h2>
+      <p>
+        LivingRoom presents the brand new concept: AfterLive, the afterparty livestream.
+      </p>
+      <p>
+        It's a Full-HD livestream of an afterparty bearing quality sounds and visuals of which the date, time and line-up will be announced on the web-site, Facebook and Twitter. So make sure you like us, follow us and show us some proper groupie love to make sure you don't miss anything!
+      </p>
+      <p>
+        When we're not live, you can enjoy footage and live-sets of earlier afterparties. Some of which will be recorded in Ultra-HD 4K with HD audio and separate visual-streams.
+      </p>
+      <p>
+        Our line-up consist mainly of upcoming talent, who all play in venues regularly for live audiences and now offer their performances for you to enjoy in the comfort of your own home, live on your television set and surround sound system.
+      </p>
+      <p>
+        Don't worry if they're unknown to you now. We'll make sure you'll soon, never again, forget their names!
+      </p>
+      <p>
+        AFTER one party dies, another one comes to LIVE
+      </p>
+      <p>
+        AfterLive is just the beginning, LivingRoom is brewing on some more crazy buzZziness.
+      </p>
+      <p>
+        So be sure to give us a blue thumbs-up and follow us on twitter. There's much more to come.
+      </p>
+      <p>
+        Cheers,<br />
+        The LivingRoom Team
+      </p>
+    </div>
+  </main>
+
+  <script>
+    function initAboutClick() {
+      const main = document.querySelector('.page-content');
+      const content = document.querySelector('.about-content');
+      if (!main || !content) return;
+
+      main.addEventListener('click', (e) => {
+        if (!content.contains(e.target as Node)) {
+          window.location.href = '/';
+        }
+      });
+    }
+
+    initAboutClick();
+    document.addEventListener('astro:after-swap', initAboutClick);
+  </script>
+</BaseLayout>

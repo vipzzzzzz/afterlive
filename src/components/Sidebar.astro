@@ -1,0 +1,26 @@
+---
+import { nav } from '@/data/site';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const normalizedPath = currentPath.replace(/\/$/, '') || '/';
+---
+
+<aside class="sidebar">
+  <nav>
+    {nav.map((item) => {
+      const isActive = normalizedPath === item.href;
+      return (
+        <a
+          href={item.href}
+          class:list={[{ active: isActive }]}
+        >
+          {item.label}
+        </a>
+      );
+    })}
+  </nav>
+</aside>

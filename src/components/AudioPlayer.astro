@@ -1,0 +1,76 @@
+---
+---
+
+<div class="audio-player paused" data-src="/audio/monoloc-trysome.mp3" aria-label="Toggle audio" role="button" tabindex="0">
+  <div class="audio-bars">
+    <div class="audio-bar" style="height: 3px"></div>
+    <div class="audio-bar" style="height: 3px"></div>
+    <div class="audio-bar" style="height: 3px"></div>
+    <div class="audio-bar" style="height: 3px"></div>
+    <div class="audio-bar" style="height: 3px"></div>
+    <div class="audio-bar" style="height: 3px"></div>
+    <div class="audio-bar" style="height: 3px"></div>
+    <div class="audio-bar" style="height: 3px"></div>
+  </div>
+  <span class="audio-track">Monoloc — Trysome</span>
+</div>
+
+<script>
+  let audio: HTMLAudioElement | null = null;
+  let audioCtx: AudioContext | null = null;
+  let gainNode: GainNode | null = null;
+
+  function initAudioPlayer() {
+    const player = document.querySelector('.audio-player') as HTMLElement;
+    if (!player) return;
+
+    player.addEventListener('click', toggleAudio);
+    player.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleAudio();
+      }
+    });
+  }
+
+  function toggleAudio() {
+    const player = document.querySelector('.audio-player') as HTMLElement;
+    if (!player) return;
+
+    if (!audio) {
+      audio = new Audio(player.dataset.src);
+      audio.loop = true;
+
+      audioCtx = new AudioContext();
+      const source = audioCtx.createMediaElementSource(audio);
+      gainNode = audioCtx.createGain();
+      source.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      gainNode.gain.value = 0;
+    }
+
+    if (audio.paused) {
+      audio.play();
+      if (audioCtx?.state === 'suspended') audioCtx.resume();
+      // Fade in
+      gainNode?.gain.cancelScheduledValues(audioCtx!.currentTime);
+      gainNode?.gain.setValueAtTime(gainNode.gain.value, audioCtx!.currentTime);
+      gainNode?.gain.linearRampToValueAtTime(1, audioCtx!.currentTime + 1);
+      player.classList.remove('paused');
+      player.classList.add('playing');
+    } else {
+      // Fade out
+      gainNode?.gain.cancelScheduledValues(audioCtx!.currentTime);
+      gainNode?.gain.setValueAtTime(gainNode.gain.value, audioCtx!.currentTime);
+      gainNode?.gain.linearRampToValueAtTime(0, audioCtx!.currentTime + 0.5);
+      setTimeout(() => {
+        audio?.pause();
+        player.classList.remove('playing');
+        player.classList.add('paused');
+      }, 500);
+    }
+  }
+
+  initAudioPlayer();
+  document.addEventListener('astro:after-swap', initAudioPlayer);
+</script>

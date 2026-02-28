@@ -1,0 +1,120 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import { site, nav } from '@/data/site';
+import BackgroundSlideshow from '@/components/BackgroundSlideshow.astro';
+import Sidebar from '@/components/Sidebar.astro';
+import AudioPlayer from '@/components/AudioPlayer.astro';
+import SocialIcons from '@/components/SocialIcons.astro';
+import Credits from '@/components/Credits.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  heavyOverlay?: boolean;
+  showFooter?: boolean;
+  videoBackground?: boolean;
+}
+
+const { title, heavyOverlay = false, showFooter = true, videoBackground = false } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={site.tagline} />
+  <title>{pageTitle}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Six+Caps&display=swap" rel="stylesheet" />
+  <ViewTransitions />
+</head>
+<body>
+  <!-- Logo -->
+  <a id="logo" href="/">
+    <img
+      src="/images/logo.png"
+      srcset="/images/logo.png 1x, /images/logo@2x.png 2x"
+      alt={site.name}
+      width="160"
+      height="45"
+    />
+  </a>
+
+  <!-- Hamburger -->
+  <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Sidebar -->
+  <Sidebar currentPath={currentPath} />
+
+  <!-- Main Content -->
+  <slot />
+
+  <!-- Footer -->
+  {showFooter && (
+    <footer class="footer-container">
+      <Credits />
+      <nav class="footer-nav">
+        {nav.map((item) => (
+          <a href={item.href}>{item.label}</a>
+        ))}
+      </nav>
+      <div class="copyright">
+        &copy; {new Date().getFullYear()} {site.name}. <Fragment set:html={
+          'Copyright <a target="_blank" href="https://www.facebook.com/KarlAlexanderOfficial?ref=hl">KARL ALEXANDER</a>'
+        } />
+      </div>
+    </footer>
+  )}
+
+  <!-- Audio Player -->
+  <AudioPlayer />
+
+  <!-- Social Icons -->
+  <SocialIcons />
+
+  <!-- Background -->
+  {videoBackground ? (
+    <div class="video-bg">
+      <video autoplay muted loop playsinline>
+        <source src="/video/Out_B_Loop.mp4" type="video/mp4" />
+      </video>
+    </div>
+  ) : (
+    <BackgroundSlideshow heavyOverlay={heavyOverlay} />
+  )}
+
+  <!-- Sidebar + Hamburger Script -->
+  <script>
+    function initSidebar() {
+      const hamburger = document.querySelector('.hamburger');
+      const sidebar = document.querySelector('.sidebar');
+      if (!hamburger || !sidebar) return;
+
+      hamburger.addEventListener('click', () => {
+        const isOpen = sidebar.classList.toggle('open');
+        hamburger.classList.toggle('active', isOpen);
+        hamburger.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+          sidebar.classList.remove('open');
+          hamburger.classList.remove('active');
+          hamburger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    initSidebar();
+    document.addEventListener('astro:after-swap', initSidebar);
+  </script>
+</body>
+</html>

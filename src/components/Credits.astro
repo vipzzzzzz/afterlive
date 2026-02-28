@@ -1,0 +1,28 @@
+---
+import { credits } from '@/data/site';
+
+// Parse credit format: [TEXT (small)] → <span>TEXT <small>small</small></span>
+function parseCredits(raw: string): string {
+  return raw.replace(/\[([^\]]*)\]/g, (_, inner: string) => {
+    const parsed = inner
+      .replace(/\(([^)]*)\)/g, '<small>$1</small>');
+    return `<span>${parsed}</span>`;
+  });
+}
+
+const creditHtml = parseCredits(credits);
+---
+
+<div class="credits">
+  <a href="/">
+    <img
+      src="/images/logo.png"
+      srcset="/images/logo.png 1x, /images/logo@2x.png 2x"
+      alt="AfterLive"
+      width="160"
+      height="45"
+      style="margin: 0 auto 32px;"
+    />
+  </a>
+  <Fragment set:html={creditHtml} />
+</div>

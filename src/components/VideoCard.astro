@@ -1,0 +1,28 @@
+---
+interface Props {
+  title: string;
+  date: string;
+  youtubeId: string;
+}
+
+const { title, date, youtubeId } = Astro.props;
+const thumbUrl = `/images/thumbs/${youtubeId}.jpg`;
+const formattedDate = new Date(date).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<article class="video-card" data-youtube-id={youtubeId}>
+  <button class="video-card-btn" aria-label={`Play ${title}`}>
+    <img class="video-card-thumb-img" src={thumbUrl} alt={title} loading="lazy" />
+    <div class="video-card-play">
+      <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19" /></svg>
+    </div>
+    <div class="video-card-info">
+      <div class="video-card-title">{title}</div>
+      <div class="video-card-date">{formattedDate}</div>
+    </div>
+  </button>
+</article>

@@ -1,0 +1,81 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+---
+
+<BaseLayout showFooter={true} videoBackground={true}>
+  <main class="home-intro">
+      <button
+        class="play-button"
+        id="play-teaser"
+        aria-label="Play the Teaser"
+      >
+        <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19" /></svg>
+      </button>
+      <p class="home-tagline-text">{site.tagline}</p>
+  </main>
+
+  <div class="video-overlay" id="video-overlay">
+    <button class="video-overlay-close" id="video-overlay-close" aria-label="Close video">&times;</button>
+    <div class="video-overlay-player">
+      <iframe
+        id="teaser-iframe"
+        width="100%"
+        height="100%"
+        src=""
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+
+  <script>
+    function initTeaser() {
+      const btn = document.getElementById('play-teaser');
+      const overlay = document.getElementById('video-overlay');
+      const iframe = document.getElementById('teaser-iframe') as HTMLIFrameElement;
+      const closeBtn = document.getElementById('video-overlay-close');
+      if (!btn || !overlay || !iframe || !closeBtn) return;
+
+      const teaserUrl = 'https://www.youtube-nocookie.com/embed/zUnV7zG6jsM?autoplay=1';
+      const livestreamUrl = 'https://www.youtube-nocookie.com/embed/l3kSprnpfHg?autoplay=1';
+
+      function openVideo(url: string) {
+        iframe.src = url;
+        overlay.classList.add('active');
+      }
+
+      function close() {
+        overlay.classList.remove('active');
+        iframe.src = '';
+      }
+
+      btn.addEventListener('click', () => openVideo(teaserUrl));
+
+      // "LiveStream" nav links trigger the Awakenings livestream
+      document.querySelectorAll('a[href="/"]').forEach((link) => {
+        // Skip the logo
+        if (link.id === 'logo') return;
+        // Only intercept when already on the homepage
+        link.addEventListener('click', (e) => {
+          if (window.location.pathname === '/' || window.location.pathname === '') {
+            e.preventDefault();
+            openVideo(livestreamUrl);
+          }
+        });
+      });
+
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) close();
+      });
+    }
+
+    initTeaser();
+    document.addEventListener('astro:after-swap', initTeaser);
+  </script>
+</BaseLayout>

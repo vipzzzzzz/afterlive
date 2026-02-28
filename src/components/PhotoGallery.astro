@@ -1,0 +1,62 @@
+---
+import { galleryPhotos } from '@/data/site';
+---
+
+<div class="gallery" id="gallery">
+  <div class="gallery-image-container">
+    <img
+      class="gallery-image"
+      src={galleryPhotos[0]}
+      alt="Gallery photo 1"
+      id="gallery-img"
+    />
+
+    <button class="gallery-nav gallery-nav--prev" aria-label="Previous photo">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="2" fill="none" /></svg>
+    </button>
+
+    <button class="gallery-nav gallery-nav--next" aria-label="Next photo">
+      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" stroke="currentColor" stroke-width="2" fill="none" /></svg>
+    </button>
+  </div>
+
+  <div class="gallery-counter" id="gallery-counter">1 / {galleryPhotos.length}</div>
+</div>
+
+<script define:vars={{ photos: galleryPhotos }}>
+  // Expose to module script
+  window.__galleryPhotos = photos;
+</script>
+
+<script>
+  function initGallery() {
+    const photos: string[] = (window as any).__galleryPhotos;
+    if (!photos?.length) return;
+
+    const img = document.getElementById('gallery-img') as HTMLImageElement;
+    const counter = document.getElementById('gallery-counter')!;
+    const prevBtn = document.querySelector('.gallery-nav--prev');
+    const nextBtn = document.querySelector('.gallery-nav--next');
+    if (!img || !counter) return;
+
+    let current = 0;
+
+    function show(index: number) {
+      current = ((index % photos.length) + photos.length) % photos.length;
+      img.src = photos[current];
+      img.alt = `Gallery photo ${current + 1}`;
+      counter.textContent = `${current + 1} / ${photos.length}`;
+    }
+
+    prevBtn?.addEventListener('click', () => show(current - 1));
+    nextBtn?.addEventListener('click', () => show(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+  }
+
+  initGallery();
+  document.addEventListener('astro:after-swap', initGallery);
+</script>
